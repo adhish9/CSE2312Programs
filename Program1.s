@@ -82,8 +82,7 @@ product:
 maximum:
     MOV R7, LR
     CMP R1, R3              @ compare R1, R3
-    MOVLE R1, R3            @ overwrite R1 with R3 if R1 is lesser
-than or equal to R3
+    MOVLE R1, R3            @ overwrite R1 with R3 if R1 is lesser than or equal to R3
     MOV R0, R1              @ move the value from reg R1 to reg R0
     MOV PC, R7
 
