@@ -1,8 +1,14 @@
+@Program2
+@Adhish Deshpande
+@1001104148
+
+
     .global main
     .func main
    
 main:
-    ADD R6, #0, #0
+    MOV R6, #0		    @ set initial return value to 0 
+    
     BL  _scanf              @ branch to scan procedure with return
     MOV R7, R0              @ store n in R7
     BL  _scanf		    @ branch to scan procedure with return
@@ -21,24 +27,30 @@ main:
 _count_partitions:
     PUSH {LR}               @ store the return address
     CMP R1, #0              @ compare the input argument to 1
-    ADDEQ R6, R6, #1            @ set return value to 1 if equal
+    MOVEQ R0, #1            @ set return value to 1 if equal
     POPEQ {PC}              @ restore stack pointer and return if equal
    
-    CMP R1, #0
-    ADDLT R6, R6, #0
-    POPLT {PC}
+    CMP R1, #0		    @ compare the input argument to 0
+    MOVLT R0, #0	    @ set return value to 0 if less than
+    POPLT {PC}	 	    @ restore stack pointer and return if less than
     
-    CMP R2, #0
-    ADDEQ R6, R6, #0
-    POPEQ {PC}
+    CMP R2, #0 		    @ compare the input argument to 0
+    MOVEQ R0, #0	    @ set return value to 0 if equal
+    POPEQ {PC}		    @ restore stack pointer and return if equal 
     
-    SUB R4, R7, R8
-    SUB R5, 
-    PUSH {R1}               @ backup input argument value  
-    SUB R1, R1, #1          @ decrement the input argument
-    BL _fact                @ compute fact(n-1)
-    POP {R1}                @ restore input argument
-    MUL R0, R0, R1          @ compute fact(n-1)*n
+    PUSH {R1}               @ backup input argument value 
+    PUSH {R2}               @ backup input argument value 
+    
+    SUB R1, R1, R2 	    @ calculating (n-m)
+    BL _count_partitions    @ call function again 
+    ADD R6, R6, R0	    @ add return value to R6
+    
+    POP  {R2}		    @ restore R2 from stack 
+    POP  {R1}		    @ restore R1 from stack
+    SUB  R2, R2, #1	    @ calculating (m-1)
+    BL _count_partitions    @ call function again
+    
+    
     POP  {PC}               @ restore the stack pointer and return
 
 _printf:
@@ -62,4 +74,5 @@ _scanf:
 
 .data
 format_str:     .asciz      "%d"
-printf_str:     .asciz      "There are %d partitions of %d using integers up to %d"
+printf_str:     .asciz      "There are %d partitions of %d using integers up to %d \n"
+
