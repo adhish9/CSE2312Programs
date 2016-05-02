@@ -54,15 +54,15 @@ _generate:
 	
 	
 _sort_ascending:
-	PUSH {LR}
+	PUSH {LR}		@ backup stack pointer
 _outer_loop:
 	CMP R0, #19		@ R0 = j
-	POPEQ {PC} 
+	POPEQ {PC} 		@ restore stack pointer if equal
 	LDR R3, =array_b	@ R3 contains the address of array b	
 	LSL R2, R0, #2   	@ initiate the process of reading the array
-	ADD R2, R3, R2
+	ADD R2, R3, R2		@ add R2 and R3 and store in R2
 	LDR R2, [R2]		@ a[iMin] = R2
-	PUSH {R2}
+	PUSH {R2}		@ backup R2
 	ADD R1, R0, #1		@ i stored in R1 (j=i+1)
 _inner_loop:
 	CMP R1, #20
@@ -73,14 +73,14 @@ _inner_loop:
 	CMP R7, R2		@ a[i] < a[iMin]
 	MOVLT R2, R7		@ a[iMin]=a[i]
 	MOVLT R10, R1		@ iMIN = i
-	ADD R1, R1, #1
-	BL _inner_loop
+	ADD R1, R1, #1		
+	BL _inner_loop		@ branch to inner loop
 _compare:
 	POP {R5}
 	CMP R2, R5
 	BLNE _swap
 	ADD R0, R0, #1
-	B _outer_loop
+	B _outer_loop		@ branch to outer loop 
 _swap:
 	MOV R8, R2
 	MOV R2, R5
@@ -134,20 +134,19 @@ _readloop:
 	POP {R0}		@ restore register
 	ADD R0, R0, #1		@ increment index
 	B _readloop		@ branch to next loop iteration
-
-
+	
 
 _printf_a:
-	PUSH {LR}		@ store the return address
+	PUSH {LR}		@ backup return address
 	LDR R0, =printf_str_a	@ R0 contains formatted string address
 	BL printf		@ call printf
 	POP {PC}		@ restore the stack pointer and return
 
 _printf_b:
-	PUSH {LR}
-	LDR R0, =printf_str_b
-	BL printf
-	POP {PC}
+	PUSH {LR}		@ backup return address
+	LDR R0, =printf_str_b	@ R0 contains formatted string address
+	BL printf		@ call printf
+	POP {PC}		@ restore the stack pointer and return 
 	
 _exit:
 	PUSH {LR}
