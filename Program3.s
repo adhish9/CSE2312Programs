@@ -52,13 +52,54 @@ _generate:
 	ADD R0, R0, #2		@ increment index
 	B _generate	
 	
+	
+_sort_ascending:
+	PUSH {LR}
+_outer_loop:
+	CMP R0, #19		@ R0 = j
+	POPEQ {PC} 
+	LDR R3, =array_b	@ R3 contains the address of array b	
+	LSL R2, R0, #2   	@ initiate the process of reading the array
+	ADD R2, R3, R2
+	LDR R2, [R2]		@ a[iMin] = R2
+	PUSH {R2}
+	ADD R1, R0, #1		@ i stored in R1 (j=i+1)
+_inner_loop:
+	CMP R1, #20
+	BEQ _compare
+	LSL R7, R1, #2
+	ADD R7, R3, R7
+	LDR R7, [R7]		@ R7 = a[i]		
+	CMP R7, R2		@ a[i] < a[iMin]
+	MOVLT R2, R7		@ a[iMin]=a[i]
+	MOVLT R10, R1		@ iMIN = i
+	ADD R1, R1, #1
+	BL _inner_loop
+_compare:
+	POP {R5}
+	CMP R2, R5
+	BLNE _swap
+	ADD R0, R0, #1
+	B _outer_loop
+_swap:
+	MOV R8, R2
+	MOV R2, R5
+	MOV R5, R8
+	LSL R11, R0, #2
+	ADD R11, R11, R3
+	STR R5, [R11]
+	LSL R9, R10, #2
+	ADD R9, R9, R3
+	STR R2, [R9]
+	MOV PC, LR
+	
 _readloop:
 	CMP R0, #0
 	PUSHEQ {LR}
 	CMP R0, #20		@ check to see if we are done iterating
 	POPEQ {PC}		@ exit loop if done
-	LDR R1, =array_a	@ get address of a
-	LDR R3, =array_b	
+	LDR R1, =array_a	@ get address of array A
+	LDR R3, =array_b	@ get address of array B
 	LSL R2, R0, #2		@ multiply index * 4 to get array offset
 	LSL R5, R0, #2
 	ADD R2, R1, R2		@ R2 now has the element address
@@ -93,18 +134,9 @@ _readloop:
 	POP {R0}		@ restore register
 	ADD R0, R0, #1		@ increment index
 	B _readloop		@ branch to next loop iteration
-	
-_exit:
-	PUSH {LR}
-	MOV R7, #4		@ write syscall, 4
-	MOV R0, #1		@ output stream to monitor, 1
-	MOV R2, #21		@ print string length
-	LDR R1, =exit_str 	@ string at label exit_str:
-	SWI 0			@ execute syscall
-	MOV R7, #1		@ terminate syscall, 1
-	SWI 0			@ execute syscall
-	POP {PC}
-	
+
+
+
 _printf_a:
 	PUSH {LR}		@ store the return address
 	LDR R0, =printf_str_a	@ R0 contains formatted string address
@@ -117,45 +149,17 @@ _printf_b:
 	BL printf
 	POP {PC}
 	
-_sort_ascending:
+_exit:
 	PUSH {LR}
-loop_i:
-	CMP R0, #19		@ R0 = j
-	POPEQ {PC} 
-	LDR R3, =array_b	@ R3 contains the address of array b	
-	LSL R2, R0, #2   	@ initiate the process of reading the array
-	ADD R2, R3, R2
-	LDR R2, [R2]		@ a[iMin] = R2
-	PUSH {R2}
-	ADD R1, R0, #1		@ i stored in R1 (j=i+1)
-loop_j:
-	CMP R1, #20
-	BEQ compare
-	LSL R7, R1, #2
-	ADD R7, R3, R7
-	LDR R7, [R7]		@ R7 = a[i]		
-	CMP R7, R2		@ a[i] < a[iMin]
-	MOVLT R2, R7		@ a[iMin]=a[i]
-	MOVLT R10, R1		@ iMIN = i
-	ADD R1, R1, #1
-	B loop_j
-compare:
-	POP {R5}
-	CMP R2, R5
-	BLNE swap
-	ADD R0, R0, #1
-	B loop_i
-swap:
-	MOV R8, R2
-	MOV R2, R5
-	MOV R5, R8
-	LSL R11, R0, #2
-	ADD R11, R11, R3
-	STR R5, [R11]
-	LSL R9, R10, #2
-	ADD R9, R9, R3
-	STR R2, [R9]
-	MOV PC,LR
+	MOV R7, #4		@ write syscall, 4
+	MOV R0, #1		@ output stream to monitor, 1
+	MOV R2, #21		@ print string length
+	LDR R1, =exit_str 	@ string at label exit_str:
+	SWI 0			@ execute syscall
+	MOV R7, #1		@ terminate syscall, 1
+	SWI 0			@ execute syscall
+	POP {PC}
+	
 	
 .data
 
@@ -163,6 +167,6 @@ swap:
 array_a:	.skip		80
 array_b:	.skip		80
 printf_str_a: 	.asciz		"array_a[%d] = %d,\t"
-printf_str_b:	.asciz		"\tarray_b[%d] = %d\n"
+printf_str_b:	.asciz		"array_b[%d] = %d\n"
 exit_str:	.ascii		"Terminating Program.\n"
 format_str:	.asciz		"%d"
