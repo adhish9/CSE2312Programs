@@ -72,7 +72,7 @@ _readloop:
 	PUSH {R5}
 	MOV R2, R1		@ move array value to R2 for printf
 	MOV R1, R0		@ move array index to R1 for printf
-	BL _printfA		@ branch to _printf procedure with return
+	BL _printf_a		@ branch to _printf procedure with return
 	POP {R5}
 	POP {R3}
 	POP {R2}
@@ -85,7 +85,7 @@ _readloop:
 	PUSH {R5}
 	MOV R2, R3
 	MOV R1, R0
-	BL _printfB
+	BL _printf_b
 	POP {R5}
 	POP {R3}
 	POP {R2}		@ restore register
@@ -105,15 +105,15 @@ _exit:
 	SWI 0			@ execute syscall
 	POP {PC}
 	
-_printfA:
+_printf_a:
 	PUSH {LR}		@ store the return address
-	LDR R0, =printf_str	@ R0 contains formatted string address
+	LDR R0, =printf_str_a	@ R0 contains formatted string address
 	BL printf		@ call printf
 	POP {PC}		@ restore the stack pointer and return
 
-_printfB:
+_printf_b:
 	PUSH {LR}
-	LDR R0, =printf_strB
+	LDR R0, =printf_str_b
 	BL printf
 	POP {PC}
 	
@@ -162,7 +162,7 @@ swap:
 .balign	4
 array_a:	.skip		80
 array_b:	.skip		80
-printf_str: 	.asciz		"a[%d] = %d,"
-printf_strB:	.asciz		"\tb[%d] = %d\n"
+printf_str_a: 	.asciz		"array_a[%d] = %d,\t"
+printf_str_b:	.asciz		"\tarray_b[%d] = %d\n"
 exit_str:	.ascii		"Terminating Program.\n"
 format_str:	.asciz		"%d"
