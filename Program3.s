@@ -7,18 +7,18 @@
 	.func main
 	
 main:
-	BL _scanf
+	BL _scanf		@ branch to _scanf procedure
 	MOV R4, R0		@ storing the value of n in R4
 	MOV R0, #0		@ initialize index variable
-	BL _generate
-	MOV R0, #0
-	BL _sort_ascending
-	MOV R0, #0
-	BL _readloop
-	B _exit
+	BL _generate		@ branch to _generate procedure
+	MOV R0, #0		@ initialize index variable
+	BL _sort_ascending	@ branch to _sort_ascending procedure
+	MOV R0, #0		@ initialize index variable 
+	BL _readloop		@ branch to _readloop procedure
+	B _exit			@ branch to exit and terminate program
 	
 _scanf:
-	PUSH {LR}
+	PUSH {LR}		@ backup stack pointer
     	SUB SP, SP, #4          @ make room on stack
     	LDR R0, =format_str     @ R0 contains address of format string
     	MOV R1, SP              @ move SP to R1 to store entry on stack
@@ -28,8 +28,8 @@ _scanf:
     	POP {PC}	        @ return
 	
 _generate:
-	CMP R0, #0
-	PUSHEQ {LR}
+	CMP R0, #0		@ check to see if we started at 0 
+	PUSHEQ {LR}		@ backup stack pointer
 	CMP R0, #20		@ check to see if we are done iterating
 	POPEQ {PC}		@ exit loop if done
 	LDR R1, =array_a	@ get address of a
@@ -38,7 +38,7 @@ _generate:
 	LSL R5, R0, #2
 	ADD R2, R1, R2		@ R2 now has the element address
 	ADD R5, R3, R5		
-	PUSH {R0}
+	PUSH {R0}		@ push R0 to stack
 	ADD R0, R4, R0		@ R0 = n+i
 	STR R0, [R2]		@ a[i] = n+i
 	STR R0, [R5]
@@ -48,9 +48,9 @@ _generate:
 	ADD R5, R5, #4
 	STR R0, [R2]
 	STR R0, [R5]
-	POP {R0}
+	POP {R0}		@ pop from stack to R0
 	ADD R0, R0, #2		@ increment index
-	B _generate	
+	B _generate		@ branch to _generate 
 	
 	
 _sort_ascending:
