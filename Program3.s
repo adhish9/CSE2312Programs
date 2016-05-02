@@ -3,7 +3,7 @@
 @1001104148
 
 
-  .global main
+  	.global main
 	.func main
 	
 main:
