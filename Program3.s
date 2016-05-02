@@ -166,7 +166,7 @@ _exit:
 .balign	4
 array_a:	.skip		80
 array_b:	.skip		80
-printf_str_a: 	.asciz		"array_a[%d] = %d,\t"
+printf_str_a: 	.asciz		"array_a[%d] = %d, "
 printf_str_b:	.asciz		"array_b[%d] = %d\n"
 exit_str:	.ascii		"Terminating Program.\n"
 format_str:	.asciz		"%d"
