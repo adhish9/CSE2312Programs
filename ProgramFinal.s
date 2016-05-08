@@ -45,8 +45,39 @@ _printf_array:
 	ADD R0, R0, #1         
     	B   _printf_array           
 _printf_array_done:
-	MOV R1, R5
+	BL _find_min
+	@BL _find_max
+	@MOV R1, R5
+	@BL _find_sum
     	B _exit                 
+
+_find_min:
+	PUSH {LR}
+	MOV R0, #0
+	LDR R1, =array_a
+	LSL R2, R0, #2
+	ADD R2, R2, R1
+	LDR R2, [R2]
+_find_min_loop:
+	ADD R0, R0, #1
+	CMP R0, #10
+	BEQ _find_min_done
+	LSL R3, R0, #2
+	ADD R3, R1, R3
+	LDR R3, [R3]
+	CMP R3, R2
+	MOVLT R2, R3
+	B _find_min_loop
+_find_min_done:
+	MOV R1, R2
+	BL _printf_min
+	POP {PC}
+
+_printf_min:
+	PUSH {LR}
+	LDR R0, =printf_min_str
+	BL printf
+	POP {PC}
 
 _scanf:
 	PUSH {LR}             
@@ -64,7 +95,8 @@ _printf:
     	LDR R0, =printf_str     
     	BL printf              
     	POP {PC}                
-    
+   
+
 _exit:  
 	MOV R7, #4              
     	MOV R0, #1             
