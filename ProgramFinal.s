@@ -149,4 +149,3 @@ printf_min_str:	.asciz		"minimum = %d\n"
 printf_max_str:	.asciz		"maximum = %d\n"
 printf_sum_str:	.asciz		"sum = %d\n"
 exit_str:	.ascii		"\n"
-
