@@ -46,8 +46,8 @@ _printf_array:
     	B   _printf_array           
 _printf_array_done:
 	BL _find_min
-	@BL _find_max
-	@MOV R1, R5
+	BL _find_max
+	MOV R1, R5
 	@BL _find_sum
     	B _exit                 
 
@@ -79,6 +79,34 @@ _printf_min:
 	BL printf
 	POP {PC}
 
+_find_max:
+	PUSH {LR}
+	MOV R0, #0
+	LDR R1, =array_a
+	LSL R2, R0, #2
+	ADD R2, R2, R1
+	LDR R2, [R2]
+_find_max_loop:
+	ADD R0, R0, #1
+	CMP R0, #10
+	BEQ _find_max_done
+	LSL R3, R0, #2
+	ADD R3, R1, R3
+	LDR R3, [R3]
+	CMP R3, R2
+	MOVGT R2, R3
+	B _find_max_loop
+_find_max_done:
+	MOV R1, R2
+	BL _printf_max
+	POP {PC}
+
+_printf_max:
+	PUSH {LR}
+	LDR R0, =printf_max_str
+	BL printf
+	POP {PC}
+	
 _scanf:
 	PUSH {LR}             
     	SUB SP, SP, #4         
